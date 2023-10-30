@@ -58,12 +58,10 @@ def parse_node_parent(infile, sep=','):
 #    print t.get_ascii(attributes=['name'])
     return t
 
-def build_tree_from_tab(dataframe, sep="\t"):
+def build_tree_from_tab(inputdata, sep="\t"): # Windows converts to dataframe
     t = Tree()
-    # for line in open(infile):
-      #   lineage = [x.strip('"\'') for x in line.rstrip().split(sep)]
-    for _, row in dataframe.iterrows():  # no file required - just a data.frame
-        lineage = [x.strip('"\'') for x in row.tolist()] # no file required - just a data.frame
+    for _, row in inputdata.iterrows():
+        lineage = [x.strip('"\'') for x in row.tolist()]
         parent = t
         for name in lineage:
             if '->' in name:
@@ -84,6 +82,31 @@ def build_tree_from_tab(dataframe, sep="\t"):
     
     return t
 
+def build_tree_from_tab_dict(inputdata, sep="\t"): # Ubuntu mantains dict
+    t = Tree()
+    lines = [[inputdata[column][i] for column in inputdata] for i in range(len(inputdata[next(iter(inputdata))]))]
+    for lineage in lines:
+        lineage = [x.strip('"\'') for x in lineage]
+        parent = t
+        for name in lineage:
+            if '->' in name:
+                name,attributes = name.split('->')
+                name = name.strip()
+                leaf = parent.add_child(name=name)
+                attributes = attributes.split(';')
+                for attr in attributes:
+                    k,v = attr.split(':')
+                    leaf.add_feature(k,v)
+            else:
+                name = name.strip()
+                children = [x.name for x in parent.get_children()]
+                if not name in children:
+                    parent = parent.add_child(name=name)
+                else:
+                    parent = [x for x in parent.get_children() if x.name == name][0]
+    
+    return t
+  
 def coordinates(self, topology_only=True, node_size=False, xlim=360, rot=0 ):
     """
 rects: xmin, xmax, ymin, ymax
@@ -322,7 +345,10 @@ def py_sunburst_data(input, type="newick", sep="\t", ladderize=False, ultrametri
     if type == "newick":
         t = Tree(input)
     elif type == "lineage":
-        t = build_tree_from_tab(input, sep=sep)
+        if isinstance(input, dict):  # Ubuntu dict
+          t = build_tree_from_tab_dict(input, sep=sep)
+        else:
+          t = build_tree_from_tab(input, sep=sep) # Windows dataframe
     elif type == "node_parent":
         t = parse_node_parent(input, sep=sep)
 
@@ -426,7 +452,10 @@ def tree_data(input, type="newick", sep="\t", ladderize=False, ultrametric=False
     if type == "newick":
         t = Tree(input)
     elif type == "lineage":
-        t = build_tree_from_tab(input, sep=sep)
+        if isinstance(input, dict):  # Ubuntu dict
+          t = build_tree_from_tab_dict(input, sep=sep)
+        else:
+          t = build_tree_from_tab(input, sep=sep) # Windows dataframe
     elif type == "node_parent":
         t = parse_node_parent(input, sep=sep)
 
