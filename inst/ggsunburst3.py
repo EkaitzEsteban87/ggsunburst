@@ -58,7 +58,7 @@ def parse_node_parent(infile, sep=','):
 #    print t.get_ascii(attributes=['name'])
     return t
 
-def build_tree_from_tab(infile, sep="\t"):
+def build_tree_from_tab(dataframe, sep="\t"):
     t = Tree()
     # for line in open(infile):
       #   lineage = [x.strip('"\'') for x in line.rstrip().split(sep)]
