@@ -60,8 +60,10 @@ def parse_node_parent(infile, sep=','):
 
 def build_tree_from_tab(infile, sep="\t"):
     t = Tree()
-    for line in open(infile):
-        lineage = [x.strip('"\'') for x in line.rstrip().split(sep)]
+    # for line in open(infile):
+      #   lineage = [x.strip('"\'') for x in line.rstrip().split(sep)]
+    for _, row in dataframe.iterrows():  # no file required - just a data.frame
+        lineage = [x.strip('"\'') for x in row.tolist()] # no file required - just a data.frame
         parent = t
         for name in lineage:
             if '->' in name:
