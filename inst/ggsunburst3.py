@@ -13,6 +13,7 @@ def initializator(self):
     self.rects = {}
     self.labels = {}
     self.segments = {}
+    self.add_node_feature = {}
     for node in self.get_descendants('postorder'):
         node.rects = {}
         node.labels = {}
@@ -175,7 +176,10 @@ text: x, y, label, rangle, pangle, hjust, hpjust
         node.labels[ 'label'  ] = node.name
         node.labels[ 'angle'  ] = angle                           # angle bisector of arc (angle for text label)
         node.labels[ 'rangle' ] = self.rangle(angle)              # radial text angle
-        node.labels[ 'pangle' ] = self.pangle(angle)              # perpendicular text angle
+        if not self.add_node_feature:
+            node.labels[ 'pangle' ] = self.pangle(angle)          # perpendicular text angle (nodes)
+        else:
+            node.labels[ 'pangle' ] = self.rangle(angle)          # radial text angle (nodes)
         node.labels[ 'phjust' ] = self.hjust_ptext(angle)
         node.labels[ 'pvjust' ] = self.vjust_ptext(angle)
         node.labels[ 'rhjust' ] = self.hjust_rtext(angle)
@@ -362,6 +366,7 @@ def py_sunburst_data(input, type="newick", sep="\t", ladderize=False, ultrametri
         raise Exception('ERROR: input %s could not be loaded. make sure it is in newick or flat tabulated format' % input)
 
     # the tree was succesfully loaded
+    t.add_node_feature=node_attributes # for node label rotation
     if not node_attributes and hasattr(t.get_children()[0],'node_attributes'):
         node_attributes = t.get_children()[0].node_attributes.split('%')
 
