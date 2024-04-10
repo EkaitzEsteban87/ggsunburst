@@ -22,8 +22,6 @@ def initializator(self):
             node.x = xpos
             xpos += 1
 
-
-
 def parse_node_parent(infile, sep=','):
     t = Tree()
     fh = open(infile)
@@ -344,6 +342,7 @@ def py_sunburst_data(input, type="newick", sep="\t", ladderize=False, ultrametri
     if node_attributes and not isinstance(node_attributes, list):
         node_attributes = [node_attributes]
 
+    print(input)
     # load input file into a ete tree object
     t = ''
     if type == "newick":
